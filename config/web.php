@@ -52,7 +52,8 @@ $config = [
             ],
         ],
         'test' => [
-            'class' => TestService::class
+            'class' => TestService::class,
+            'someProp' => 'New value'
         ]
     ],
     'params' => $params,

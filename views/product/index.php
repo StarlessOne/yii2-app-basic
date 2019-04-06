@@ -1,8 +1,11 @@
 <?php
 
+use app\models\Product;
+use yii\helpers\FormatConverter;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
+
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
@@ -25,9 +28,22 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
-            'name',
+            [
+                'attribute' => 'name',
+                'format' => 'html',
+                'value' => function (Product $model) {
+                    return Html::a($model->name, "/product/view?id=$model->id");
+                }
+            ],
             'price',
-            'created_at',
+            [
+                'attribute' => 'created_at',
+
+                'value' => function (Product $model) {
+                    return Html::tag('span', FormatConverter::convertDateIcuToPhp($model->created_at), ['class' => 'small']);
+                },
+                'format' => 'html',
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

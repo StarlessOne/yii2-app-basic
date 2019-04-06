@@ -5,18 +5,18 @@ namespace app\controllers;
 use app\models\Product;
 use yii\web\Controller;
 
-class TestController extends Controller
-{
+class TestController extends Controller {
     /**
      * Displays test page.
      *
      * @return string
      */
-    public function actionIndex()
-    {
+    public function actionIndex() {
+
+        $someVar = \Yii::$app->test->showProp();
         $product = new Product();
         $product->category = 'Some category';
-        $product->id = 1;
+        $product->id = $someVar;
         $product->name = 'First product';
         $product->price = 9001;
 

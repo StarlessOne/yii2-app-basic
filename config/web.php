@@ -1,5 +1,7 @@
 <?php
 
+use app\components\TestService;
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
@@ -9,7 +11,7 @@ $config = [
     'bootstrap' => ['log'],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
+        '@npm' => '@vendor/npm-asset',
     ],
     'components' => [
         'request' => [
@@ -49,6 +51,9 @@ $config = [
             'rules' => [
             ],
         ],
+        'test' => [
+            'class' => TestService::class
+        ]
     ],
     'params' => $params,
 ];

@@ -15,10 +15,11 @@ class TestController extends Controller {
 
         $someVar = \Yii::$app->test->showProp();
         $product = new Product();
-        $product->category = 'Some category';
         $product->id = $someVar;
-        $product->name = 'First product';
+        $product->name = 'Fir';
         $product->price = 9001;
+
+        $product->validate();
 
         return $this->render('index', ['product' => $product]);
     }

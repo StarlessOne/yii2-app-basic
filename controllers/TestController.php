@@ -35,6 +35,12 @@ class TestController extends Controller {
                     'created_at' => time()
                 ])
             ->execute();
+        \Yii::$app->db->createCommand()->batchInsert('task',
+            ['title', 'description', 'creator_id', 'created_at'], [
+                ['task1', 'desc1', '1', time()],
+                ['task2', 'desc2', '2', time()],
+                ['task3', 'desc3', '3', time()],
+            ])->execute();
     }
 
     public function actionSelect() {

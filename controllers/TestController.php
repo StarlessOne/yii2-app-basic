@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\Product;
+use yii\db\Query;
 use yii\web\Controller;
 
 class TestController extends Controller {
@@ -22,5 +23,31 @@ class TestController extends Controller {
         $product->validate();
 
         return $this->render('index', ['product' => $product]);
+    }
+
+    public function actionInsert() {
+        \Yii::$app->db->createCommand()
+            ->insert('user',
+                ['username' => 'user3',
+                    'password_hash' => 'someHash3',
+                    'auth_key' => 'someKey3',
+                    'creator_id' => 42,
+                    'created_at' => time()
+                ])
+            ->execute();
+    }
+
+    public function actionSelect() {
+        $query = new Query();
+        $data = $query->from('user')->where('id=1')->one();
+        var_dump($data);
+
+        $query = new Query();
+        $data = $query->from('user')->where('id>1')->orderBy('username')->all();
+        var_dump($data);
+
+        $query = new Query();
+        $data = $query->from('user')->count('id');
+        var_dump($data);
     }
 }

@@ -55,5 +55,9 @@ class TestController extends Controller {
         $query = new Query();
         $data = $query->from('user')->count('id');
         var_dump($data);
+
+        $query = new Query();
+        $data = $query->from(['task'])->innerJoin('user', 'task.creator_id = user.id')->all();
+        var_dump($data);
     }
 }

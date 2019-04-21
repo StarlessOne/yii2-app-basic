@@ -19,21 +19,23 @@ use Yii;
  * @property User $updater
  * @property TaskUser[] $taskUsers
  */
-class Task extends \yii\db\ActiveRecord
-{
+class Task extends \yii\db\ActiveRecord {
+
+    const RELATION_CREATOR = 'creator';
+    const RELATION_TASK_USERS = 'taskUsers';
+    const RELATION_ACCESSED_USERS = 'accessedUsers';
+
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'task';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['title', 'description', 'creator_id', 'created_at'], 'required'],
             [['description'], 'string'],
@@ -47,8 +49,7 @@ class Task extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'id' => 'ID',
             'title' => 'Title',
@@ -63,33 +64,33 @@ class Task extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCreator()
-    {
+    public function getCreator() {
         return $this->hasOne(User::className(), ['id' => 'creator_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getUpdater()
-    {
+    public function getUpdater() {
         return $this->hasOne(User::className(), ['id' => 'updater_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTaskUsers()
-    {
+    public function getTaskUsers() {
         return $this->hasMany(TaskUser::className(), ['task_id' => 'id']);
+    }
+
+    public function getAccessedUsers() {
+        return $this->hasMany(User::class, ['id' => 'user_id'])->via(Task::RELATION_TASK_USERS);
     }
 
     /**
      * {@inheritdoc}
      * @return TaskQuery the active query used by this AR class.
      */
-    public static function find()
-    {
+    public static function find() {
         return new TaskQuery(get_called_class());
     }
 }

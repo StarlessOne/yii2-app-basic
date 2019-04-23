@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "task".
@@ -43,6 +44,12 @@ class Task extends \yii\db\ActiveRecord {
             [['title'], 'string', 'max' => 255],
             [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['creator_id' => 'id']],
             [['updater_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updater_id' => 'id']],
+        ];
+    }
+
+    public function behaviors() {
+        return [
+            ['class' => TimestampBehavior::class],
         ];
     }
 

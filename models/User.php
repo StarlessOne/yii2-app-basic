@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "user".
@@ -41,6 +42,13 @@ class User extends \yii\db\ActiveRecord
             [['username', 'password_hash', 'auth_key'], 'string', 'max' => 255],
         ];
     }
+
+    public function behaviors() {
+        return [
+            ['class' => TimestampBehavior::class],
+        ];
+    }
+
 
     /**
      * {@inheritdoc}

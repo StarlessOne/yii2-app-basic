@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 
 /**
@@ -50,6 +51,11 @@ class Task extends \yii\db\ActiveRecord {
     public function behaviors() {
         return [
             ['class' => TimestampBehavior::class],
+            [
+                'class' => BlameableBehavior::class,
+                'createdByAttribute' => 'creator_id',
+                'updatedByAttribute' => 'updater_id'
+            ],
         ];
     }
 

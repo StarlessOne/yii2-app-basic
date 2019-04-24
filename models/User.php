@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\web\IdentityInterface;
 
@@ -46,11 +47,15 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
     public function behaviors() {
         return [
             ['class' => TimestampBehavior::class],
+            [
+                'class' => BlameableBehavior::class,
+                'createdByAttribute' => 'creator_id',
+                'updatedByAttribute' => 'updater_id'
+            ],
         ];
     }
 
-    public function beforeSave($insert)
-    {
+    public function beforeSave($insert) {
         if (parent::beforeSave($insert)) {
             if ($this->password) {
                 $this->password_hash = \Yii::$app->getSecurity()->generatePasswordHash($this->password);
@@ -115,8 +120,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
      * @param string $username
      * @return User|null
      */
-    public static function findByUsername($username)
-    {
+    public static function findByUsername($username) {
         return self::findOne(['username' => $username]);
     }
 
@@ -191,8 +195,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
      * @param string $password password to validate
      * @return bool if password provided is valid for current user
      */
-    public function validatePassword($password)
-    {
+    public function validatePassword($password) {
         return Yii::$app->getSecurity()->validatePassword($password, $this->password_hash);
     }
 }

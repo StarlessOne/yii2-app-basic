@@ -24,6 +24,10 @@ use yii\web\IdentityInterface;
  * @property TaskUser[] $taskUsers
  */
 class User extends \yii\db\ActiveRecord implements IdentityInterface {
+
+    const SCENARIO_UPDATE = 'update';
+    const SCENARIO_CREATE = 'create';
+
     public $password;
 
     /**
@@ -38,7 +42,8 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
      */
     public function rules() {
         return [
-            [['username', 'password'], 'required'],
+            [['username', 'password'], 'required', 'on' => self::SCENARIO_CREATE],
+            [['username'], 'required', 'on' => self::SCENARIO_UPDATE],
             [['creator_id', 'updater_id', 'created_at', 'updated_at'], 'integer'],
             [['username'], 'string', 'max' => 255],
         ];

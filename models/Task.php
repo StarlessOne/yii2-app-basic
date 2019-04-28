@@ -95,6 +95,9 @@ class Task extends \yii\db\ActiveRecord {
         return $this->hasMany(TaskUser::className(), ['task_id' => 'id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getAccessedUsers() {
         return $this->hasMany(User::class, ['id' => 'user_id'])->via(Task::RELATION_TASK_USERS);
     }

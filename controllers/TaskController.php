@@ -15,6 +15,8 @@ use yii\filters\VerbFilter;
  */
 class TaskController extends Controller
 {
+    public $defaultAction = 'my';
+
     /**
      * {@inheritdoc}
      */
@@ -40,7 +42,7 @@ class TaskController extends Controller
     }
 
     /**
-     * Lists all Task models.
+     * Lists all user created tasks.
      * @return mixed
      */
     public function actionMy()
@@ -50,6 +52,23 @@ class TaskController extends Controller
         ]);
 
         return $this->render('my', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * Lists all user shared tasks.
+     * @return mixed
+     */
+    public function actionShared()
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query' => Task::find()
+                ->byCreator(Yii::$app->user->id)
+                ->innerJoinWith(Task::RELATION_TASK_USERS),
+        ]);
+
+        return $this->render('shared', [
             'dataProvider' => $dataProvider,
         ]);
     }

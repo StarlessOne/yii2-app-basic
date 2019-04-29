@@ -137,6 +137,7 @@ class TaskController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Yii::$app->session->addFlash('success', 'A task has been updated successfully');
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -155,6 +156,7 @@ class TaskController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
+        Yii::$app->session->addFlash('success', 'A task has been deleted successfully');
 
         return $this->redirect(['index']);
     }

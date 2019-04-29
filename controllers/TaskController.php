@@ -7,6 +7,7 @@ use app\models\Task;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -136,6 +137,10 @@ class TaskController extends Controller
     {
         $model = $this->findModel($id);
 
+        if (!$model || $model->creator_id !== Yii::$app->user->id) {
+            throw new ForbiddenHttpException('Access denied!');
+        }
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Yii::$app->session->addFlash('success', 'A task has been updated successfully');
             return $this->redirect(['view', 'id' => $model->id]);
@@ -155,6 +160,12 @@ class TaskController extends Controller
      */
     public function actionDelete($id)
     {
+        $model = $this->findModel($id);
+
+        if (!$model || $model->creator_id !== Yii::$app->user->id) {
+            throw new ForbiddenHttpException('Access denied!');
+        }
+
         $this->findModel($id)->delete();
         Yii::$app->session->addFlash('success', 'A task has been deleted successfully');
 

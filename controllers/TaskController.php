@@ -143,7 +143,7 @@ class TaskController extends Controller
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Yii::$app->session->addFlash('success', 'A task has been updated successfully');
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['my']);
         }
 
         return $this->render('update', [
@@ -169,7 +169,7 @@ class TaskController extends Controller
         $this->findModel($id)->delete();
         Yii::$app->session->addFlash('success', 'A task has been deleted successfully');
 
-        return $this->redirect(['index']);
+        return $this->redirect(['my']);
     }
 
     /**

@@ -74,6 +74,26 @@ class TaskController extends Controller
     }
 
     /**
+     * Lists all tasks that were shared with current user.
+     * @return mixed
+     */
+    public function actionAccessed()
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query' => Task::find()
+                ->where(['<>', 'task.creator_id', Yii::$app->user->id])
+                ->andWhere(['=', 'task_user.user_id', Yii::$app->user->id])
+                ->JoinWith(Task::RELATION_TASK_USERS),
+        ]);
+
+        ;
+
+        return $this->render('accessed', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
      * Displays a single Task model.
      * @param integer $id
      * @return mixed

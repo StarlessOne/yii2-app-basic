@@ -102,8 +102,19 @@ class TaskController extends Controller
      */
     public function actionView($id)
     {
+        $model = $this->findModel($id);
+        if ($id === Yii::$app->user->id) {
+            $dataProvider = new ActiveDataProvider([
+                'query' => $model->getTaskUsers()
+            ]);
+        } else {
+            $dataProvider = false;
+        }
+
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'dataProvider' => $dataProvider,
         ]);
     }
 

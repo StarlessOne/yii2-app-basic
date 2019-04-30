@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\User;
 use Yii;
 use app\models\Task;
 use yii\data\ActiveDataProvider;
@@ -103,7 +104,7 @@ class TaskController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
-        if ($id === Yii::$app->user->id) {
+        if ($model->creator_id === Yii::$app->user->id) {
             $dataProvider = new ActiveDataProvider([
                 'query' => $model->getTaskUsers()
             ]);

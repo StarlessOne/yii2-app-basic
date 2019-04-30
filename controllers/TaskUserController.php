@@ -87,8 +87,9 @@ class TaskUserController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
+        Yii::$app->session->addFlash('success', 'Task is not shared with that user anymore!');
 
-        return $this->redirect(['index']);
+        return $this->redirect(['task/my']);
     }
 
     /**

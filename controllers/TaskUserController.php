@@ -6,7 +6,6 @@ use app\models\Task;
 use app\models\User;
 use Yii;
 use app\models\TaskUser;
-use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
@@ -34,7 +33,7 @@ class TaskUserController extends Controller
                 ],
             ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                     'deleteAll' => ['POST'],

@@ -86,6 +86,12 @@ class TaskUserController extends Controller
      */
     public function actionDelete($id)
     {
+        $model = $this->findModel($id);
+        $taskCreatorId = $model->getTask()->one()->creator_id;
+
+        if ($taskCreatorId !== Yii::$app->user->id) {
+            throw new ForbiddenHttpException('Access denied!');
+        }
         $this->findModel($id)->delete();
         Yii::$app->session->addFlash('success', 'Task is not shared with that user anymore!');
 

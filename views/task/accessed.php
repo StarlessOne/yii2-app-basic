@@ -20,9 +20,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'description:text',
             [
                 'label' => 'Creator',
+                'format' => 'html',
                 'value' => function (\app\models\Task $model) {
                     $creator = $model->creator;
-                    return $creator->username;
+                    return Html::a($creator->username, ['user/view', 'id' => $creator->id]);
                 }
             ],
             'created_at:datetime',
@@ -30,13 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template' => '{view} {update} {delete} {share}',
-                'buttons' => [
-                    'share' => function ($url, $model, $key) {
-                        $icon = \yii\bootstrap\Html::icon('share');
-                        return Html::a($icon, ['task-user/create', 'taskId' => $model->id]);
-                    }
-                ],
+                'template' => '{view}',
             ],
         ],
     ]); ?>

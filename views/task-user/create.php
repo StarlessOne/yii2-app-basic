@@ -7,7 +7,7 @@ use yii\helpers\Html;
 /* @var $users array*/
 
 $this->title = 'Share task with';
-$this->params['breadcrumbs'][] = ['label' => 'My tasks', 'url' => ['task/']];
+$this->params['breadcrumbs'][] = ['label' => 'My tasks', 'url' => ['task/my']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="task-user-create">

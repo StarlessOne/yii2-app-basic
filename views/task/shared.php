@@ -34,11 +34,16 @@ $this->params['breadcrumbs'][] = $this->title;
 
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template' => '{view} {update} {delete} {share}',
+                'template' => '{view} {update} {delete} {unshare}',
                 'buttons' => [
-                    'share' => function ($url, $model, $key) {
-                        $icon = \yii\bootstrap\Html::icon('share');
-                        return Html::a($icon, ['task-user/create', 'taskId' => $model->id]);
+                    'unshare' => function ($url, $model, $key) {
+                        $icon = \yii\bootstrap\Html::icon('remove');
+                        return Html::a($icon, ['task-user/delete-all', 'taskId' => $model->id],
+                            ['data' => [
+                                'confirm' => 'Are you sure you want to unshare this task?',
+                                'method' => 'post']
+                            ]);
+
                     }
                 ],
             ],

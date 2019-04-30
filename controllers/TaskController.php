@@ -34,7 +34,7 @@ class TaskController extends Controller
                 ],
             ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -132,6 +132,7 @@ class TaskController extends Controller
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
+     * @throws ForbiddenHttpException if the model cannot be found
      */
     public function actionUpdate($id)
     {
@@ -157,6 +158,8 @@ class TaskController extends Controller
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
+     * @throws ForbiddenHttpException if the model cannot be found
+     * @throws \Exception|\Throwable in case delete failed.
      */
     public function actionDelete($id)
     {

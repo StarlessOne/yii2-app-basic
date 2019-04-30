@@ -2,11 +2,13 @@
 
 namespace app\controllers;
 
+use app\models\User;
 use Yii;
 use app\models\Task;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -15,6 +17,8 @@ use yii\filters\VerbFilter;
  */
 class TaskController extends Controller
 {
+    public $defaultAction = 'my';
+
     /**
      * {@inheritdoc}
      */
@@ -31,7 +35,7 @@ class TaskController extends Controller
                 ],
             ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -40,7 +44,7 @@ class TaskController extends Controller
     }
 
     /**
-     * Lists all Task models.
+     * Lists all user created tasks.
      * @return mixed
      */
     public function actionMy()
@@ -55,6 +59,43 @@ class TaskController extends Controller
     }
 
     /**
+     * Lists all user shared tasks.
+     * @return mixed
+     */
+    public function actionShared()
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query' => Task::find()
+                ->byCreator(Yii::$app->user->id)
+                ->innerJoinWith(Task::RELATION_TASK_USERS),
+        ]);
+
+        return $this->render('shared', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * Lists all tasks that were shared with current user.
+     * @return mixed
+     */
+    public function actionAccessed()
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query' => Task::find()
+                ->where(['<>', 'task.creator_id', Yii::$app->user->id])
+                ->andWhere(['=', 'task_user.user_id', Yii::$app->user->id])
+                ->JoinWith(Task::RELATION_TASK_USERS),
+        ]);
+
+        ;
+
+        return $this->render('accessed', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
      * Displays a single Task model.
      * @param integer $id
      * @return mixed
@@ -62,8 +103,19 @@ class TaskController extends Controller
      */
     public function actionView($id)
     {
+        $model = $this->findModel($id);
+        if ($model->creator_id === Yii::$app->user->id) {
+            $dataProvider = new ActiveDataProvider([
+                'query' => $model->getTaskUsers()
+            ]);
+        } else {
+            $dataProvider = false;
+        }
+
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -92,13 +144,19 @@ class TaskController extends Controller
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
+     * @throws ForbiddenHttpException if the model cannot be found
      */
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
 
+        if (!$model || $model->creator_id !== Yii::$app->user->id) {
+            throw new ForbiddenHttpException('Access denied!');
+        }
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            Yii::$app->session->addFlash('success', 'A task has been updated successfully');
+            return $this->redirect(['my']);
         }
 
         return $this->render('update', [
@@ -112,12 +170,21 @@ class TaskController extends Controller
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
+     * @throws ForbiddenHttpException if the model cannot be found
+     * @throws \Exception|\Throwable in case delete failed.
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
 
-        return $this->redirect(['index']);
+        if (!$model || $model->creator_id !== Yii::$app->user->id) {
+            throw new ForbiddenHttpException('Access denied!');
+        }
+
+        $this->findModel($id)->delete();
+        Yii::$app->session->addFlash('success', 'A task has been deleted successfully');
+
+        return $this->redirect(['my']);
     }
 
     /**

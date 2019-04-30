@@ -39,8 +39,10 @@ AppAsset::register($this);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
-            ['label' => 'My tasks', 'url' => ['/task/my']],
-            ['label' => 'New task', 'url' => ['/task/create']],
+            !Yii::$app->user->isGuest ? ['label' => 'My tasks', 'url' => ['/task']] : '',
+            !Yii::$app->user->isGuest ? ['label' => 'Shared tasks', 'url' => ['/task/shared']] : '',
+            !Yii::$app->user->isGuest ? ['label' => 'Accessed tasks', 'url' => ['/task/accessed']] : '',
+            !Yii::$app->user->isGuest ? ['label' => 'New task', 'url' => ['/task/create']] : '',
             Yii::$app->user->isGuest ? (
             ['label' => 'Login', 'url' => ['/site/login']]
             ) : (

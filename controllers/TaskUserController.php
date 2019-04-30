@@ -6,7 +6,6 @@ use app\models\Task;
 use app\models\User;
 use Yii;
 use app\models\TaskUser;
-use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
@@ -34,47 +33,22 @@ class TaskUserController extends Controller
                 ],
             ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
+                    'deleteAll' => ['POST'],
                 ],
             ],
         ];
     }
 
     /**
-     * Lists all TaskUser models.
-     * @return mixed
-     */
-    public function actionIndex()
-    {
-        $dataProvider = new ActiveDataProvider([
-            'query' => TaskUser::find(),
-        ]);
-
-        return $this->render('index', [
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
-     * Displays a single TaskUser model.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
      * Creates a new TaskUser model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
+     * If creation is successful, the browser will be redirected to the 'task/my' page.
      * @param integer $taskId
      * @return mixed
+     * @throws ForbiddenHttpException if the model cannot be found or user is not its creator
+
      */
     public function actionCreate($taskId)
     {
@@ -104,26 +78,6 @@ class TaskUserController extends Controller
     }
 
     /**
-     * Updates an existing TaskUser model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
-
-        return $this->render('update', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
      * Deletes an existing TaskUser model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
@@ -132,9 +86,37 @@ class TaskUserController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        $taskCreatorId = $model->getTask()->one()->creator_id;
 
-        return $this->redirect(['index']);
+        if ($taskCreatorId !== Yii::$app->user->id) {
+            throw new ForbiddenHttpException('Access denied!');
+        }
+        $this->findModel($id)->delete();
+        Yii::$app->session->addFlash('success', 'Task is not shared with that user anymore!');
+
+        return $this->redirect(['task/my']);
+    }
+
+    /**
+     * Deletes all existing shared relations model.
+     * If deletion is successful, the browser will be redirected to the 'task/shared' page.
+     * @param integer $taskId
+     * @return mixed
+     * @throws ForbiddenHttpException if the model cannot be found or user is not a creator of the task
+     */
+    public function actionDeleteAll($taskId)
+    {
+        $model = Task::findOne($taskId);
+
+        if (!$model || $model->creator_id !== Yii::$app->user->id) {
+            throw new ForbiddenHttpException();
+        }
+
+        $model->unlinkAll(Task::RELATION_TASK_USERS, true);
+
+        Yii::$app->session->addFlash('success', 'Task is not shared anymore!');
+        return $this->redirect(['task/my']);
     }
 
     /**

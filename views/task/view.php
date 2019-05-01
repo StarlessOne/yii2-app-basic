@@ -46,13 +46,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
-            [
-                'label' => 'username',
-                'format' => 'raw',
-                'value' => function ($model) {
-                    return $model->getUser()->one()->username;
-                }
-            ],
+            ['attribute' => 'user.username'],
             [
                 'class' => 'yii\grid\ActionColumn',
                 'template' => '{unshare}',

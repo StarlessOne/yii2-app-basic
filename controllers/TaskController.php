@@ -15,15 +15,13 @@ use yii\filters\VerbFilter;
 /**
  * TaskController implements the CRUD actions for Task model.
  */
-class TaskController extends Controller
-{
+class TaskController extends Controller {
     public $defaultAction = 'my';
 
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
-    {
+    public function behaviors() {
         return [
             'access' => [
                 'class' => AccessControl::class,
@@ -47,8 +45,7 @@ class TaskController extends Controller
      * Lists all user created tasks.
      * @return mixed
      */
-    public function actionMy()
-    {
+    public function actionMy() {
         $dataProvider = new ActiveDataProvider([
             'query' => Task::find()->byCreator(Yii::$app->user->id),
         ]);
@@ -62,8 +59,7 @@ class TaskController extends Controller
      * Lists all user shared tasks.
      * @return mixed
      */
-    public function actionShared()
-    {
+    public function actionShared() {
         $dataProvider = new ActiveDataProvider([
             'query' => Task::find()
                 ->byCreator(Yii::$app->user->id)
@@ -79,16 +75,13 @@ class TaskController extends Controller
      * Lists all tasks that were shared with current user.
      * @return mixed
      */
-    public function actionAccessed()
-    {
+    public function actionAccessed() {
         $dataProvider = new ActiveDataProvider([
             'query' => Task::find()
                 ->where(['<>', 'task.creator_id', Yii::$app->user->id])
                 ->andWhere(['=', 'task_user.user_id', Yii::$app->user->id])
                 ->JoinWith(Task::RELATION_TASK_USERS),
-        ]);
-
-        ;
+        ]);;
 
         return $this->render('accessed', [
             'dataProvider' => $dataProvider,
@@ -101,16 +94,16 @@ class TaskController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
-    {
+    public function actionView($id) {
         $model = $this->findModel($id);
-        if ($model->creator_id === Yii::$app->user->id) {
-            $dataProvider = new ActiveDataProvider([
-                'query' => $model->getTaskUsers()
-            ]);
-        } else {
-            $dataProvider = false;
+
+        if ($model->creator_id !== Yii::$app->user->id) {
+            throw new ForbiddenHttpException('Access denied!');
         }
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $model->getTaskUsers()
+        ]);
 
 
         return $this->render('view', [
@@ -124,8 +117,7 @@ class TaskController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
-    {
+    public function actionCreate() {
         $model = new Task();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -146,8 +138,7 @@ class TaskController extends Controller
      * @throws NotFoundHttpException if the model cannot be found
      * @throws ForbiddenHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
-    {
+    public function actionUpdate($id) {
         $model = $this->findModel($id);
 
         if (!$model || $model->creator_id !== Yii::$app->user->id) {
@@ -173,8 +164,7 @@ class TaskController extends Controller
      * @throws ForbiddenHttpException if the model cannot be found
      * @throws \Exception|\Throwable in case delete failed.
      */
-    public function actionDelete($id)
-    {
+    public function actionDelete($id) {
         $model = $this->findModel($id);
 
         if (!$model || $model->creator_id !== Yii::$app->user->id) {
@@ -194,8 +184,7 @@ class TaskController extends Controller
      * @return Task the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
-    {
+    protected function findModel($id) {
         if (($model = Task::findOne($id)) !== null) {
             return $model;
         }
